@@ -1,0 +1,78 @@
+service: hoppers-todo
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: eu-west-2
+  stage: dev
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [ TodosDynamoDbTable, Arn ]
+
+functions:
+  listitems:
+    handler: handler.get
+    events:
+      - http:
+          path: items
+          method: get
+          cors: true
+
+  newitem:
+    handler: handler.post
+    events:
+      - http:
+          path: items
+          method: post
+          cors: true
+
+  updateItem:
+    handler: handler.put
+    events:
+      - http:
+          path: items/{id}
+          method: put
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+  
+  deleteItem:
+    handler: handler.delete
+    events:
+      - http:
+          path: items/{id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+
+resources:
+  Resources:
+    TodosDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}

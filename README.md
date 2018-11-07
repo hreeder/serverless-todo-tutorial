@@ -1,6 +1,8 @@
 # Serverless Todo Tutorial
 This tutorial was created to be used alongside an in-person presentation. I'll update this readme one day with a walkthrough.
 
+The `alternative_example` folder is a more feature-rich example, utilising the HTML & CSS from todomvc.
+
 ## Setup
 Make sure you have [node.js & npm](https://nodejs.org/en/download/) installed, then you should be able to run the following:
 
