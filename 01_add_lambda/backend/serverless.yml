@@ -1,0 +1,16 @@
+service: hoppers-todo
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: eu-west-2
+  stage: dev
+
+functions:
+  newitem:
+    handler: handler.post
+    events:
+      - http:
+          path: items
+          method: post
+          cors: true
